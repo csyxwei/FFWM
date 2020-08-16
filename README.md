@@ -128,7 +128,7 @@ You can download the original LightCNN model from [LightCNN](https://github.com/
 If you find our work useful in your research or publication, please cite:
  
     @InProceedings{wei2020ffwm,
-      author = {Wei, Yuxiang and Liu, Ming and Wang Haolin and Zhu, Ruifeng and Hu, Guosheng and Zuo, Wangmeng},
+      author = {Wei, Yuxiang and Liu, Ming and Wang, Haolin and Zhu, Ruifeng and Hu, Guosheng and Zuo, Wangmeng},
       title = {Learning Flow-based Feature Warping For Face Frontalization with Illumination Inconsistent Supervision},
       booktitle = {Proceedings of the European Conference on Computer Vision},
       year = {2020}
