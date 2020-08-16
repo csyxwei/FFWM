@@ -1,0 +1,4 @@
+opencv-python==4.3.0.36
+dominate
+tensorboardX
+tqdm
