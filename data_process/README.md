@@ -4,7 +4,8 @@
 
 We use the dense landmarks extracted by [Face++ Dense Facial Landmarks](https://www.faceplusplus.com/sdk/densekey/) to align images and train our FlowNet. You can process your images to get the landmarks by: 
 
-    # change the image path in get_landmarks.py and add the face++ keys
+    # Change the image path in get_landmarks.py and add the face++ keys
+    # You may also need to change the API url in face_plus_plus.py to yours, or you will get an Error 401.
     python get_landmarks.py
 
 To speed up the processing, we only extract the landmarks under `07` illumination condition from each pose. The naming format is `xxx_xx_xx_xxx.json` (no illumination).
