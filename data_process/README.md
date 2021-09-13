@@ -13,6 +13,8 @@ To speed up the processing, we only extract the landmarks under `07` illuminatio
 
 We use [face-parsing.PyTorch](https://github.com/zllrunning/face-parsing.PyTorch) to extract the facial masks. The mask is composed of the segmentation of face, ear, hair, and neck. To speed up the processing, we only extract the masks under `07` illumination condition from each pose. The naming format is `xxx_xx_xx_xxx_07.png`.
 
+**The landmarks and masks we used to process multipie dataset can download from [GoogleDrive](https://drive.google.com/drive/folders/1U26FvuLtXraxPrRNxCxFka3DOvRuG4NW?usp=sharing) or [BaiduNetDisk](https://pan.baidu.com/s/1X62Atd9Q_USs0aGQk3WllA)(l98p).**
+
 ### Process
 
 Removing the comments and change the path in `process.py`, then run
