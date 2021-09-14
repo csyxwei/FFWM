@@ -28,7 +28,7 @@ The source code for our paper "Learning Flow-based Feature Warping For Face Fron
     conda install pytorch==1.5.0 torchvision==0.6.0 cudatoolkit=9.2 -c pytorch
     
     # 3. Install dependency
-    pip install -r requirement.txt
+    pip install -r requirements.txt
     
     # 4. Build pytorch Custom CUDA Extensions, we have tested it on pytorch1.5.0+cu92
     bash setup.sh
@@ -53,11 +53,11 @@ The data folder is structured as follows:
              ├── images
              └── pairs.txt
 
-Our test `gallery_list.npy` and `visual_list.npy` can download from [GoogleDrive](https://drive.google.com/drive/folders/1U26FvuLtXraxPrRNxCxFka3DOvRuG4NW?usp=sharing) or [BaiduNetDisk](https://pan.baidu.com/s/1X62Atd9Q_USs0aGQk3WllA)(l98p).
+Our test `gallery_list.npy` and `visual_list.npy` can download from [GoogleDrive](https://drive.google.com/drive/folders/1U26FvuLtXraxPrRNxCxFka3DOvRuG4NW?usp=sharing) or [BaiduNetDisk](https://pan.baidu.com/s/1X62Atd9Q_USs0aGQk3WllA) (l98p).
 
 ### Testing
 
-Download the models from [GoogleDrive](https://drive.google.com/drive/folders/1U26FvuLtXraxPrRNxCxFka3DOvRuG4NW?usp=sharing) or [BaiduNetDisk](https://pan.baidu.com/s/1X62Atd9Q_USs0aGQk3WllA)(l98p) to `./checkpoints` folder or use your pretrained models. The models are structured as follows:
+Download the models from [GoogleDrive](https://drive.google.com/drive/folders/1U26FvuLtXraxPrRNxCxFka3DOvRuG4NW?usp=sharing) or [BaiduNetDisk](https://pan.baidu.com/s/1X62Atd9Q_USs0aGQk3WllA) (l98p) to `./checkpoints` folder or use your pretrained models. The models are structured as follows:
 
     ./checkpoints
           ├── ffwm
@@ -92,7 +92,7 @@ Download the models from [GoogleDrive](https://drive.google.com/drive/folders/1U
                 --model_path path/to/original lightcnn \
                 --preload
     
-You can download the original LightCNN model from [LightCNN](https://github.com/AlfredXiangWu/LightCNN). Or you can download the original and our pretrained LightCNN from [GoogleDrive](https://drive.google.com/drive/folders/1U26FvuLtXraxPrRNxCxFka3DOvRuG4NW?usp=sharing) or [BaiduNetDisk](https://pan.baidu.com/s/1X62Atd9Q_USs0aGQk3WllA)(l98p).
+You can download the original LightCNN model from [LightCNN](https://github.com/AlfredXiangWu/LightCNN). Or you can download the original and our pretrained LightCNN from [GoogleDrive](https://drive.google.com/drive/folders/1U26FvuLtXraxPrRNxCxFka3DOvRuG4NW?usp=sharing) or [BaiduNetDisk](https://pan.baidu.com/s/1X62Atd9Q_USs0aGQk3WllA) (l98p).
 
 **2. Train Forward FlowNet**
 

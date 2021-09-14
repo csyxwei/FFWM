@@ -82,7 +82,7 @@ class IdentityLoss(nn.Module):
         self.crop = crop
 
     def forward(self, out, gt):
-        grid = self.build_grid(out.size(0), 98)
+        grid = self.build_grid(out.size(0), 98).type_as(out)
         # crop the center face image
         if self.crop:
             input_out, input_gt = self.warpNet(out, grid), self.warpNet(gt, grid)
@@ -101,7 +101,7 @@ class IdentityLoss(nn.Module):
 
     def build_grid(self, b, d):
         r = d // 2
-        base_x = torch.linspace(-r, r, d).cuda().unsqueeze(0).repeat(d, 1).unsqueeze(-1)
+        base_x = torch.linspace(-r, r, d).unsqueeze(0).repeat(d, 1).unsqueeze(-1)
         base = torch.cat([base_x, base_x.transpose(1, 0)], dim=2).unsqueeze(0)
         base = base.repeat(b, 1, 1 ,1)
         bias = torch.zeros_like(base)
@@ -130,7 +130,7 @@ from . import base_networks
 class MSL1Loss(nn.Module):
     def __init__(self, criterionL1):
         super(MSL1Loss, self).__init__()
-        self.warpNet = base_networks.WarpNet().cuda()
+        self.warpNet = base_networks.WarpNet()
         self.criterionL1 = criterionL1
         self.l1_weights = [1, 1, 1.5]
 

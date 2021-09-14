@@ -17,8 +17,8 @@ class FlowNetModel(BaseModel):
         BaseModel.__init__(self, opt)
         self.loss_names = ['loss', 'loss_reg', 'loss_lm', 'loss_cor']
 
-        self.flowNet = base_networks.FlowNet(64).cuda()
-        self.warpNet = base_networks.WarpNet().cuda()
+        self.flowNet = base_networks.FlowNet(64).to(self.device)
+        self.warpNet = base_networks.WarpNet().to(self.device)
 
         if self.isTrain:
             self.model_names = ['flowNet']
@@ -26,9 +26,9 @@ class FlowNetModel(BaseModel):
             self.model_names = ['flowNet']
 
         if self.isTrain:
-            self.criterionLD = losses.MultiScaleLDLoss().cuda()
-            self.Correctness = losses.PerceptualCorrectness().cuda()
-            self.Regularization = losses.MultiAffineRegularizationLoss(kz_dic={1: 7, 2: 5, 3: 3}).cuda()
+            self.criterionLD = losses.MultiScaleLDLoss().to(self.device)
+            self.Correctness = losses.PerceptualCorrectness().to(self.device)
+            self.Regularization = losses.MultiAffineRegularizationLoss(kz_dic={1: 7, 2: 5, 3: 3}).to(self.device)
 
             self.optimizer = torch.optim.Adam(self.flowNet.parameters(), lr=0.0004, betas=(0.5, 0.999))
 
@@ -39,18 +39,18 @@ class FlowNetModel(BaseModel):
     def set_train_input(self, input):
         self.image_paths = input['input_path']
         if self.reverse:
-            self.img_S = input['img_F'].cuda().float()
-            self.img_F = input['img_S'].cuda().float()
-            self.lm_S = input['lm_F'].cuda().long()
-            self.lm_F = input['lm_S'].cuda().long()
-            self.mask = input['mask_S'].cuda().float()
+            self.img_S = input['img_F'].to(self.device).float()
+            self.img_F = input['img_S'].to(self.device).float()
+            self.lm_S = input['lm_F'].to(self.device).long()
+            self.lm_F = input['lm_S'].to(self.device).long()
+            self.mask = input['mask_S'].to(self.device).float()
         else:
-            self.img_S = input['img_S'].cuda().float()
-            self.img_F = input['img_F'].cuda().float()
-            self.lm_S = input['lm_S'].cuda().long()
-            self.lm_F = input['lm_F'].cuda().long()
-            self.mask = input['mask_F'].cuda().float()
-        gate = input['gate'].cuda().float()
+            self.img_S = input['img_S'].to(self.device).float()
+            self.img_F = input['img_F'].to(self.device).float()
+            self.lm_S = input['lm_S'].to(self.device).long()
+            self.lm_F = input['lm_F'].to(self.device).long()
+            self.mask = input['mask_F'].to(self.device).float()
+        gate = input['gate'].to(self.device).float()
         self.gate = torch.cat((gate, gate), 2)
 
 

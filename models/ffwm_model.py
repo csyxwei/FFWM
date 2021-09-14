@@ -19,13 +19,13 @@ class FFWMModel(BaseModel):
         BaseModel.__init__(self, opt)
         self.loss_names = ['loss_G', 'loss_D', 'loss_l1', 'loss_iden', 'loss_illu', 'loss_adv', 'loss_prc', 'loss_fc']
 
-        self.flowNetF = base_networks.FlowNet(64).cuda()
-        self.flowNetB = base_networks.FlowNet(64).cuda()
-        self.warpNet = base_networks.WarpNet().cuda().eval()
-        self.lightCNN = LightCNN_29Layers().cuda().eval()
+        self.flowNetF = base_networks.FlowNet(64).to(self.device)
+        self.flowNetB = base_networks.FlowNet(64).to(self.device)
+        self.warpNet = base_networks.WarpNet().to(self.device).eval()
+        self.lightCNN = LightCNN_29Layers().to(self.device).eval()
 
-        self.netG = base_networks.FFWM(sn=True).cuda()
-        self.netD = base_networks.MSDiscriminator(128, sigmoid=False).cuda()
+        self.netG = base_networks.FFWM(sn=True).to(self.device)
+        self.netD = base_networks.MSDiscriminator(128, sigmoid=False).to(self.device)
 
         self.load_network(self.lightCNN, opt.lightcnn)
 
@@ -37,11 +37,11 @@ class FFWMModel(BaseModel):
             self.model_names = ['netG', 'flowNetF']
 
         if self.isTrain:
-            self.criterionL1 = torch.nn.L1Loss().cuda()
-            self.criterionIllu = losses.MSL1Loss(self.criterionL1).cuda()
-            self.criterionPerceptual = losses.PerceptualLoss().cuda()
-            self.criterionIden = losses.IdentityLoss(self.lightCNN, crop=opt.crop).cuda()
-            self.criterionGAN = losses.GANLoss('lsgan').cuda()
+            self.criterionL1 = torch.nn.L1Loss().to(self.device)
+            self.criterionIllu = losses.MSL1Loss(self.criterionL1).to(self.device)
+            self.criterionPerceptual = losses.PerceptualLoss().to(self.device)
+            self.criterionIden = losses.IdentityLoss(self.lightCNN, crop=opt.crop).to(self.device)
+            self.criterionGAN = losses.GANLoss('lsgan').to(self.device)
 
             self.optimizer_F = torch.optim.Adam(itertools.chain(self.flowNetF.parameters(), self.flowNetB.parameters()),
                                                 lr=0.00005, betas=(0.5, 0.999))
@@ -54,18 +54,18 @@ class FFWMModel(BaseModel):
             self.optimizers_D = [self.optimizer_D]
 
         # Guided Filter
-        self.gf128 = external_function.GuidedFilter(32).cuda()
-        self.gf64 = external_function.GuidedFilter(16).cuda()
-        self.gf32 = external_function.GuidedFilter(8).cuda()
+        self.gf128 = external_function.GuidedFilter(32).to(self.device)
+        self.gf64 = external_function.GuidedFilter(16).to(self.device)
+        self.gf32 = external_function.GuidedFilter(8).to(self.device)
 
     def set_train_input(self, input):
         # S is profile, and F is Frontal
         self.image_paths = input['input_path']
-        self.img_S = input['img_S'].cuda()
-        self.img_F = input['img_F'].cuda()
-        self.lm_F = input['lm_F'].cuda()
-        self.mask_F = input['mask_F'].cuda().float()
-        self.mask_S = input['mask_S'].cuda().float()
+        self.img_S = input['img_S'].to(self.device)
+        self.img_F = input['img_F'].to(self.device)
+        self.lm_F = input['lm_F'].to(self.device)
+        self.mask_F = input['mask_F'].to(self.device).float()
+        self.mask_S = input['mask_S'].to(self.device).float()
         self.titers = input['titers']
         self.epoch = input['epoch']
 
@@ -164,11 +164,11 @@ class FFWMModel(BaseModel):
     def get_gallery_fea(self, keys, gallery):
         feas = []
         for key in keys:
-            tensor = gallery[key].cuda()
+            tensor = gallery[key].to(self.device)
             if len(tensor.size()) == 3:
                 tensor = tensor.unsqueeze(0)
             if self.opt.crop:
-                grid = self.criterionIden.build_grid(tensor.size(0), 98)
+                grid = self.criterionIden.build_grid(tensor.size(0), 98).type_as(tensor)
                 tensor = self.warpNet(tensor, grid)
                 tensor = F.interpolate(tensor, (128, 128), mode='bilinear')
             _, f, _ = self.lightCNN(tensor)
@@ -177,8 +177,8 @@ class FFWMModel(BaseModel):
 
     def set_test_input(self, input):
         self.image_paths = input['input_path']
-        self.img_S = input['img_S'].cuda()
-        self.img_F = input['img_F'].cuda()
+        self.img_S = input['img_S'].to(self.device)
+        self.img_F = input['img_F'].to(self.device)
 
     def test_forward(self):
         flow_F128, flow_F64, flow_F32 = self.flowNetF(self.img_S)
@@ -195,7 +195,7 @@ class FFWMModel(BaseModel):
             if return_fea:
                 fake_F_gray = torch.mean(self.fake_F128, dim=(1,), keepdim=True)
                 if self.opt.crop:
-                    grid = self.criterionIden.build_grid(self.fake_F128.size(0), 98)
+                    grid = self.criterionIden.build_grid(self.fake_F128.size(0), 98).type_as(fake_F_gray)
                     fake_F_gray = self.warpNet(fake_F_gray, grid)
                     fake_F_gray = F.interpolate(fake_F_gray, (128, 128), mode='bilinear')
                 _, fea, _ = self.lightCNN(fake_F_gray)
@@ -211,7 +211,7 @@ class FFWMModel(BaseModel):
 
     def load_network(self, net, path):
         print('loading the model from ', path)
-        state_dict = torch.load(path)
+        state_dict = torch.load(path, map_location=str(self.device))
         net.load_state_dict(state_dict)
 
     def get_part_grid(self):
@@ -237,7 +237,7 @@ class FFWMModel(BaseModel):
         """
         b = lm.size(0)
         r = d // 2
-        base_x = torch.linspace(-r, r, d).cuda().unsqueeze(0).repeat(d, 1).unsqueeze(-1)
+        base_x = torch.linspace(-r, r, d).to(self.device).unsqueeze(0).repeat(d, 1).unsqueeze(-1)
         base = torch.cat([base_x, base_x.transpose(1, 0)], dim=2).unsqueeze(0)
         base = base.repeat(b, 1, 1 ,1)
         bias = lm.unsqueeze(1).float()

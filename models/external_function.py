@@ -2,9 +2,14 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import Function, Variable
-import resample2d_cuda
-import local_attn_reshape_cuda
-import block_extractor_cuda
+
+try:
+    import resample2d_cuda
+    import local_attn_reshape_cuda
+    import block_extractor_cuda
+except ImportError:
+    print('Warning! Import resample2d_cuda/local_attn_reshape_cuda/block_extractor_cuda, If you are training network, please install them firstly.')
+    print()
 
 
 #################################################
@@ -144,7 +149,7 @@ class Resample2d(nn.Module):
         super(Resample2d, self).__init__()
         self.kernel_size = kernel_size
         self.dilation = dilation
-        self.sigma = torch.tensor(sigma, dtype=torch.float).cuda()
+        self.sigma = torch.tensor(sigma, dtype=torch.float)
 
     def forward(self, input1, input2):
         input1_c = input1.contiguous()
